@@ -1,0 +1,14 @@
+body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #f6f8fc; }
+.page { max-width: 1020px; margin: 20px auto; padding: 16px; position: relative; }
+.title, textarea { width: 100%; box-sizing: border-box; border: 1px solid #d6deed; border-radius: 10px; padding: 12px; }
+.title { margin-bottom: 8px; font-size: 20px; font-weight: 600; }
+.status { display: flex; gap: 12px; color: #475569; margin: 10px 0; font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+button { border: none; background: #005ff9; color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+.card { background: #fff; border: 1px solid #e6ebf5; border-radius: 12px; padding: 12px; margin-top: 12px; }
+.menu { position: absolute; z-index: 10; background: white; border: 1px solid #dbe4f4; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.menu-title { font-weight: 700; }
+.result { white-space: pre-wrap; background: #0f172a; color: #f8fafc; border-radius: 12px; padding: 12px; margin-top: 12px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #dbe4f4; padding: 8px; text-align: left; }
+code { background: #eef2ff; padding: 3px 6px; border-radius: 6px; }
