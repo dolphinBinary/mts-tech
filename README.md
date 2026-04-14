@@ -78,4 +78,4 @@ npm run dev
 - [x] Компонентная схема и интеграции (`docs/component-diagram.md`)
 - [x] Шаблон фич и реализаций (`docs/feature-checklist.md`)
 - [ ] Демо-видео
-- [ ] Презентация (7-мин питч)
+- [x] Презентация (7-мин питч, `docs/pitch-presentation.md`)

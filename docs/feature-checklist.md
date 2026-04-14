@@ -1,18 +1,38 @@
-# Mandatory/Extra Feature Checklist
+# WikiLive: обязательные и дополнительные фичи
 
-| Feature | Status | Implementation |
-|---|---|---|
-| Insert existing MWS Table in page body | ✅ | `[[table:table_id]]` -> API `/tables/embed` -> render table block |
-| In-line autosave + local cache + sync | ✅ | debounce PUT save + LocalStorage restore |
-| Backlinks | ✅ | server parses `[[page:id]]` and returns inbound links |
-| Slash-menu + hotkeys | ✅ | open by `/` and `Ctrl+/`, commands shown in menu |
-| Collaboration | ✅ | page presence heartbeat (multi-user list, check via 2 tabs) |
-| AI helper | ✅ (demo) | `/ии[url]` -> shorten/rewrite stub + limitations shown |
-| Versioning | ⚪ planned | DB history table + diff viewer |
-| Comments | ⚪ planned | block anchors + threaded API |
-| Graph of links | ⚪ planned | out/in links + graph panel |
+## 1) Обязательные фичи (MVP для хакатона)
 
-## AI dependencies and limits
-- Current implementation returns deterministic mock response from backend service.
-- Production: replace with provider SDK (e.g., OpenAI/enterprise LLM).
-- Risks: hallucinations, latency, privacy and prompt injection from external URLs.
+| Фича | Зачем нужна | Способ реализации (техподход) | Критерий готовности |
+|---|---|---|---|
+| Вставка существующей таблицы в тело страницы | Вики должна работать с данными MWS, а не только с текстом | Парсер токенов `[[table:table_id]]` + `POST /api/tables/embed` + React-рендер табличного блока | Таблица отображается inline по ID без ручного копипаста |
+| In-line автосохранение + локальный кэш + синхронизация | Снижение риска потери текста и «ощущение живого документа» | Debounce (600–1000 мс), `PUT /api/pages/{id}`, local draft в `localStorage`, версионирование `version` | При перезагрузке текст восстанавливается, правки уходят на сервер |
+| Backlinks (обратные ссылки) | Навигация и граф знаний между страницами | На backend искать `[[page:id]]`, хранить/вычислять inbound ссылки, endpoint `GET /api/pages/{id}/backlinks` | Для страницы виден список «кто ссылается на меня» |
+| Slash-menu + горячие клавиши | Быстрые команды как в современных редакторах | Ловим `/` и `Ctrl+/`, показываем командную палитру (вставить таблицу, ссылку, AI-действие) | Меню открывается и выполняет команды без мыши |
+| Совместная работа (presence) | Видимость, что страница редактируется несколькими участниками | `POST /api/pages/{id}/presence` heartbeat раз в N секунд + TTL на сервере + UI-список активных пользователей | В двух вкладках видно 2+ активных пользователя |
+
+## 2) Дополнительные фичи (усиливают решение)
+
+| Фича | Ценность | Способ реализации | Приоритет |
+|---|---|---|---|
+| AI-помощник `/ии[url]` и действия с текстом | Ускоряет работу с длинными источниками и черновиками | Endpoint `POST /api/ai/action` (summarize/rewrite), безопасный prompt-template, лимиты токенов/таймауты | High |
+| История версий страницы | Прозрачность изменений и откат | `page_history` таблица, snapshot по каждому сохранению, diff-viewer в UI | High |
+| Комментарии по блокам | Асинхронная командная работа | Якоря блоков (`blockId`), threaded comments API, индикаторы unresolved | Medium |
+| Граф связей страниц | Быстрый обзор структуры базы знаний | Сервис агрегации in/out links + отдельная панель/мини-карта | Medium |
+| Роли и права доступа | Безопасность и контроль контента | RBAC (owner/editor/viewer), проверка прав в API и UI-guard | High |
+| Экспорт в PDF/MD | Передача результатов вне системы | Серверный renderer + шаблоны экспорта | Low |
+
+## 3) Риски и как закрывать
+
+- **Конфликты редактирования**: для MVP — optimistic lock по `version`, для развития — CRDT/OT.
+- **Нестабильный AI-ответ**: fallback на deterministic-режим, журнал промптов и валидация формата.
+- **Проблемы внешних API**: retries + circuit breaker + кеш последнего успешного embed.
+- **Рост задержки автосейва**: батчирование и ограничение частоты записи.
+
+## 4) Что показать на демо (чтобы жюри быстро увидело ценность)
+
+1. Создаем страницу, печатаем текст → автосохранение.
+2. Перезагружаем вкладку → локальный кэш и синхронизация.
+3. Вставляем `[[table:sales_q1]]` → отображается живая таблица.
+4. Добавляем `[[page:roadmap]]` → в целевой странице виден backlink.
+5. Открываем вторую вкладку → presence показывает двух участников.
+6. Запускаем AI-действие (`Сократить`/`Переписать`) на фрагменте.
